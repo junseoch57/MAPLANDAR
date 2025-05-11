@@ -6,7 +6,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate   #OR update
+      ddl-auto: update   #OR validate
     show-sql: true
 
 server:
