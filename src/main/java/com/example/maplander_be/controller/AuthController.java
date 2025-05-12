@@ -6,6 +6,9 @@ import com.example.maplander_be.dto.EmailCheckResponse;
 import com.example.maplander_be.dto.LoginDto;
 import com.example.maplander_be.dto.RegisterDto;
 import com.example.maplander_be.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,23 +18,40 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
 
-    private final UserService svc;
+    private final UserService userService;
     public AuthController(UserService svc){
-        this.svc = svc;
+        this.userService = svc;
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDto dto){
 
-        svc.register(dto);
+        userService.register(dto);
         return ResponseEntity.ok("회원가입 성공");
 
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto dto, HttpSession session) {
-        User user = svc.login(dto.email(), dto.password());
+    public ResponseEntity<String> login(
+            @RequestBody LoginDto dto,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        User user = userService.login(dto.email(), dto.password());
+
+        // 세션
+        HttpSession session = request.getSession(true);
         session.setAttribute("LOGIN_USER", user.getUserId());
+
+        // 세션 쿠키
+        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setSecure(false);
+        sessionCookie.setPath("/");
+        sessionCookie.setMaxAge(60 * 60);
+        sessionCookie.setAttribute("SameSite","None");
+        response.addCookie(sessionCookie);
+
         return ResponseEntity.ok("로그인 성공");
     }
 
@@ -53,7 +73,7 @@ public class AuthController {
 
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(@RequestParam String email) {
-        boolean ok = svc.isEmailAvailable(email);
+        boolean ok = userService.isEmailAvailable(email);
         if (!ok) {
             return ResponseEntity
                     .badRequest()

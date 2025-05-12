@@ -19,3 +19,4 @@ server:
         http-only: true
         secure: false
         same-site: none
+        path: /
