@@ -26,7 +26,10 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호 확인이 일치하지 않습니다.");
         }
 
-        User user = new User(dto.email(), dto.name(), dto.password());
+        User user = new User(
+                dto.name(),
+                dto.password(),
+                dto.email());
         repo.save(user);
     }
 
