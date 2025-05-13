@@ -13,4 +13,9 @@ public interface FriendRepository extends JpaRepository<Friend, FriendId> {
     List<Friend> findByIdRequesterIdOrIdReceiverIdAndAcceptedTrue(Integer requesterId, Integer receiverId);
 
 
+    List<Friend> findByIdRequesterIdAndAcceptedTrueOrIdReceiverIdAndAcceptedTrue(
+            Integer requesterId,
+            Integer receiverId
+    );
+
 }

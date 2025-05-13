@@ -16,7 +16,7 @@ public class FriendDto {
         this.receiverEmail = receiverEmail;
     }
 
-    // 수락/거절 생성자 (기존)
+    // 수락/거절 생성자
     public FriendDto(Integer requesterId, Integer receiverId) {
         this.requesterId = requesterId;
         this.receiverId  = receiverId;

@@ -2,6 +2,7 @@ package com.example.maplander_be.controller;
 
 import com.example.maplander_be.domain.Friend;
 import com.example.maplander_be.dto.FriendDto;
+import com.example.maplander_be.dto.FriendResponseDto;
 import com.example.maplander_be.service.FriendService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -34,10 +36,25 @@ public class FriendController {
         return ResponseEntity.ok("친구 요청을 보냈습니다.");
     }
 
+    // 수정: 대기 중인 친구 요청을 DTO 형태로 반환하도록 변경
     @GetMapping("/pending")
-    public ResponseEntity<List<Friend>> pending(HttpSession session) {
+    public ResponseEntity<?> pending(HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
-        return ResponseEntity.ok(svc.getPendingRequests(me));
+        if (me == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "status", 401,
+                            "errorCode", "UNAUTHORIZED",
+                            "message", "로그인이 필요합니다."
+                    ));
+        }
+
+        List<FriendResponseDto> data = svc.getPendingRequestsDto(me);
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "data", data
+        ));
     }
 
     @PostMapping("/accept")
@@ -53,9 +70,22 @@ public class FriendController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Friend>> list(HttpSession session) {
+    public ResponseEntity<?> list(HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
-        return ResponseEntity.ok(svc.getFriends(me));
+        if (me == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "status", 401,
+                            "errorCode", "UNAUTHORIZED",
+                            "message", "로그인이 필요합니다."
+                    ));
+        }
+        List<FriendResponseDto> data = svc.getFriendList(me);
+        return ResponseEntity.ok(Map.of(
+                "status", 200,
+                "data", data
+        ));
     }
 
 
