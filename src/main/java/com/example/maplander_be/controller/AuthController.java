@@ -39,48 +39,75 @@ public class AuthController {
     ) {
         User user = userService.login(dto.email(), dto.password());
 
-        // 세션
-        HttpSession session = request.getSession(true);
-        session.setAttribute("LOGIN_USER", user.getUserId());
+        // 기존 세션이 있으면 무효화
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
 
-        // 세션 쿠키
-        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
-        sessionCookie.setHttpOnly(true);
-        sessionCookie.setSecure(false);
-        sessionCookie.setPath("/");
-        sessionCookie.setMaxAge(60 * 60);
-        sessionCookie.setAttribute("SameSite","None");
-        response.addCookie(sessionCookie);
+        // 새로운 세션 생성
+        HttpSession newSession = request.getSession(true);
+        newSession.setAttribute("LOGIN_USER", user.getUserId());
+
+
+//        // 수동 세션 쿠키 내려주기
+//        Cookie sessionCookie = new Cookie("JSESSIONID", newSession.getId());
+//        sessionCookie.setHttpOnly(true);
+//        sessionCookie.setSecure(false);
+//        sessionCookie.setPath("/");
+//        sessionCookie.setMaxAge(60 * 60);    // 1시간 유지
+//        sessionCookie.setAttribute("SameSite", "None");
+//        response.addCookie(sessionCookie);
 
         return ResponseEntity.ok("로그인 성공");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) {
-        session.invalidate();
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession(false);
+        if (session != null){
+            session.invalidate();
+        }
+
+//        //  클라이언트 쿠키 제거
+//        Cookie clearCookie = new Cookie("JSESSIONID", null);
+//        clearCookie.setPath("/");
+//        clearCookie.setMaxAge(0);
+//        response.addCookie(clearCookie);
+
+        // JSESSIONID 쿠키 즉시 삭제
+        Cookie clear = new Cookie("JSESSIONID", "");
+        clear.setMaxAge(0);
+        clear.setHttpOnly(true);
+        clear.setSecure(false);
+        response.addCookie(clear);
+
         return ResponseEntity.ok("로그아웃 성공");
     }
 
     @GetMapping("/me")
-    public ResponseEntity<String> me(HttpSession session) {
-        Object id = session.getAttribute("LOGIN_USER");
-        if (id == null) {
+    public ResponseEntity<String> me(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("LOGIN_USER") == null) {
             return ResponseEntity.status(401).body("로그인 필요");
         }
-        return ResponseEntity.ok("현재 로그인 사용자 ID: " + id);
+        return ResponseEntity.ok("현재 로그인 사용자 ID: " + session.getAttribute("LOGIN_USER"));
     }
 
 
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(@RequestParam String email) {
-        boolean ok = userService.isEmailAvailable(email);
-        if (!ok) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new EmailCheckResponse(false, "이미 사용 중인 이메일입니다."));
-        }
+        boolean available = userService.isEmailAvailable(email);
+
+        String message = available
+                ? "사용 가능한 이메일입니다."
+                : "이미 사용 중인 이메일입니다.";
+
+
         return ResponseEntity
-                .ok(new EmailCheckResponse(true, "사용 가능한 이메일입니다."));
+                .ok(new EmailCheckResponse(available, message));
     }
 
 
