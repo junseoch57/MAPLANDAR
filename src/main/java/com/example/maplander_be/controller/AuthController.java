@@ -76,9 +76,10 @@ public class AuthController {
 //        clearCookie.setMaxAge(0);
 //        response.addCookie(clearCookie);
 
-        // JSESSIONID 쿠키 즉시 삭제
+        // JSESSIONID 쿠키 삭제
         Cookie clear = new Cookie("JSESSIONID", "");
         clear.setMaxAge(0);
+        clear.setPath("/"); // 삭제 쿠키에도 동일한 경로 지정해야 함
         clear.setHttpOnly(true);
         clear.setSecure(false);
         response.addCookie(clear);
