@@ -18,7 +18,7 @@ public class UserService {
 
 
     @Transactional
-    public void register(RegisterDto dto) {
+    public User register(RegisterDto dto) {
         if (!isEmailAvailable(dto.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
@@ -30,7 +30,7 @@ public class UserService {
                 dto.name(),
                 dto.password(),
                 dto.email());
-        repo.save(user);
+        return repo.save(user);
     }
 
     public User login(String email, String password) {

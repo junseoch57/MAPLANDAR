@@ -5,11 +5,13 @@ import com.example.maplander_be.domain.User;
 import com.example.maplander_be.dto.EmailCheckResponse;
 import com.example.maplander_be.dto.LoginDto;
 import com.example.maplander_be.dto.RegisterDto;
+import com.example.maplander_be.dto.RegisterResponseDto;
 import com.example.maplander_be.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +26,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto dto){
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterDto dto){
 
-        userService.register(dto);
-        return ResponseEntity.ok("회원가입 성공");
+        User user = userService.register(dto);
+        RegisterResponseDto resp = new RegisterResponseDto(
+
+                user.getEmail(), user.getName()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)  // 201 Created(성공 응답)
+                .body(resp);
 
     }
 
