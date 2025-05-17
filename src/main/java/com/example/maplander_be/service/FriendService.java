@@ -23,7 +23,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void sendRequest(Integer requesterId, String receiverEmail) {
+    public FriendResponseDto sendRequest(Integer requesterId, String receiverEmail) {
         if (requesterId == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -41,7 +41,13 @@ public class FriendService {
             throw new IllegalArgumentException("이미 요청된 사용자입니다.");
         }
 
-        repo.save(new Friend(requesterId, receiverId, false));
+        Friend saved = repo.save(new Friend(requesterId, receiverId, false)); // 요청 저장
+        // 수정: 저장된 엔티티를 Dto로 바꿔서 return 함
+        return new FriendResponseDto(
+                receiverId,
+                receiver.getName(),
+                saved.getAccepted()
+        );
     }
 
     @Transactional

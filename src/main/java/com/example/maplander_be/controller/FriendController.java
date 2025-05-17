@@ -21,19 +21,24 @@ public class FriendController {
         this.svc = svc; }
 
     @PostMapping("/request")
-    public ResponseEntity<String> sendRequest(
+    public ResponseEntity<?> sendRequest(
             @RequestBody FriendDto dto,
             HttpSession session
     ) {
-        // 1) 세션에서 로그인된 사용자 ID 꺼내기
+        // 세션에서 로그인된 사용자 ID 꺼냄
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         if (me == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "error","UNAUTHORIZED",
+                    "message", "로그인이 필요합니다."
+            ));
         }
 
-        // 2) 서비스에 (ID, 이메일) 전달
-        svc.sendRequest(me, dto.getReceiverEmail());
-        return ResponseEntity.ok("친구 요청을 보냈습니다.");
+        // 서비스에서 Dto를 받아서 바로 응답
+        FriendResponseDto result = svc.sendRequest(me, dto.getReceiverEmail());
+        return ResponseEntity
+                .status(HttpStatus.CREATED)   // 수정: 201 Created
+                .body(result);                // 생성된 DTO 반환
     }
 
     // 수정: 대기 중인 친구 요청을 DTO 형태로 반환하도록 변경
