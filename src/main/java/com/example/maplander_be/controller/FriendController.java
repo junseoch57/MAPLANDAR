@@ -27,11 +27,11 @@ public class FriendController {
     ) {
         // 세션에서 로그인된 사용자 ID 꺼냄
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
+
         if (me == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    "error","UNAUTHORIZED",
-                    "message", "로그인이 필요합니다."
-            ));
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
         }
 
         // 서비스에서 Dto를 받아서 바로 응답
