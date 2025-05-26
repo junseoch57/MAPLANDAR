@@ -2,6 +2,7 @@ package com.example.maplander_be.service;
 
 import com.example.maplander_be.domain.ListOfGroup;
 import com.example.maplander_be.domain.Schedule;
+import com.example.maplander_be.dto.CreateGroupRequestDto;
 import com.example.maplander_be.dto.CreateScheduleRequestDto;
 import com.example.maplander_be.dto.ScheduleResponseDto;
 import com.example.maplander_be.repository.GroupRepository;
@@ -78,7 +79,31 @@ public class ScheduleService {
     }
 
 
-    public ScheduleResponseDto update(Integer scheduleId){
+    public ScheduleResponseDto update(Integer scheduleId, Integer userId, CreateGroupRequestDto req){
+
+        Schedule sch = scheduleRepo.findById(scheduleId).orElseThrow(()
+                -> new IllegalArgumentException("일정을 찾을 수 없음"));
+
+        if (!sch.getCreatorId().equals(userId)){
+            throw new IllegalArgumentException("일정 수정 권한이 없음");
+        }
+
+        Schedule updated = scheduleRepo.save(sch);
+        // Dto로 변환하고 리턴
+        return new ScheduleResponseDto(
+                updated.getScheduleId(),
+                updated.getGroup().getGroupId(),
+                updated.getCreatorId(),
+                updated.getTitle(),
+                updated.getStartDatetime(),
+                updated.getEndDatetime(),
+                updated.getDescription(),
+                updated.getLatitude(),
+                updated.getLongitude(),
+                updated.getCreatedAt(),
+                updated.getUpdatedAt()
+                // DB처럼
+        );
 
     }
 
