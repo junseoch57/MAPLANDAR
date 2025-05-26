@@ -78,4 +78,8 @@ public class ScheduleService {
     }
 
 
+    public ScheduleResponseDto update(Integer scheduleId){
+
+    }
+
 }
