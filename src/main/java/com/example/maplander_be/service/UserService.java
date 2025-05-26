@@ -36,7 +36,13 @@ public class UserService {
     public User login(String email, String password) {
         return repo.findByEmail(email)
                 .filter(u -> u.getPassword().equals(password))
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다"));
+
+    }
+
+    public User findById(Integer userId){
+
+        return repo.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
 
     }
 

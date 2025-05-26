@@ -2,10 +2,7 @@ package com.example.maplander_be.controller;
 
 
 import com.example.maplander_be.domain.User;
-import com.example.maplander_be.dto.EmailCheckResponse;
-import com.example.maplander_be.dto.LoginDto;
-import com.example.maplander_be.dto.RegisterDto;
-import com.example.maplander_be.dto.RegisterResponseDto;
+import com.example.maplander_be.dto.*;
 import com.example.maplander_be.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -99,13 +96,28 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<String> me(HttpServletRequest request) {
+    public ResponseEntity<ApiResponseDto<UserInfoDto>> me(HttpServletRequest request) {
+        // 리턴 타입 String → ApiResponseDto<UserInfoDto>으로 변경함
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("LOGIN_USER") == null) {
-            return ResponseEntity.status(401).body("로그인 필요");
+
+            ApiResponseDto<UserInfoDto> err = new ApiResponseDto<>(401,null, "로그인 필요함");
+            return ResponseEntity.status(401).body(err);
+
         }
-        return ResponseEntity.ok("현재 로그인 사용자 ID: " + session.getAttribute("LOGIN_USER"));
+
+        Integer userId = (Integer) session.getAttribute("LOGIN_USER");
+        User user = userService.findById(userId);
+
+        UserInfoDto info = new UserInfoDto(
+                user.getUserId(),
+                user.getEmail(),
+                user.getName()
+        );
+        ApiResponseDto<UserInfoDto> resp = new ApiResponseDto<>(200,info,"조회성공");
+        return ResponseEntity.ok(resp);
+
     }
 
 
