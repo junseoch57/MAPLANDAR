@@ -7,8 +7,10 @@ import com.example.maplander_be.dto.CreateScheduleRequestDto;
 import com.example.maplander_be.dto.ScheduleResponseDto;
 import com.example.maplander_be.repository.GroupRepository;
 import com.example.maplander_be.repository.ScheduleRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class ScheduleService {
     // 스케줄 생성
     public ScheduleResponseDto create(Integer ownerId, Integer groupId, CreateScheduleRequestDto req) {
         ListOfGroup group = groupRepo.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹이 없습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"그룹이 없습니다."));
         Schedule sch = new Schedule(
                 group, ownerId,
                 req.title(),
@@ -75,6 +77,7 @@ public class ScheduleService {
 
     // 스케줄 삭제
     public void delete(Integer scheduleId) {
+
         scheduleRepo.deleteById(scheduleId);
     }
 
@@ -102,7 +105,7 @@ public class ScheduleService {
                 updated.getLongitude(),
                 updated.getCreatedAt(),
                 updated.getUpdatedAt()
-                // DB처럼
+                // DB처럼 함
         );
 
     }

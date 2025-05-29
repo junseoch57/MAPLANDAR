@@ -57,7 +57,7 @@ public class ScheduleController {
     {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
 
-        ScheduleResponseDto dto = svc.update(scheduleId, me, req);  // 코드 수정중 ..
+        ScheduleResponseDto dto = svc.update(scheduleId, me, req);
         return ResponseEntity.ok(dto);
 
     }
