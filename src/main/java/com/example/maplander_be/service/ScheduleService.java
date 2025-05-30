@@ -31,6 +31,17 @@ public class ScheduleService {
     public ScheduleResponseDto create(Integer ownerId, Integer groupId, CreateScheduleRequestDto req) {
         ListOfGroup group = groupRepo.findById(groupId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"그룹이 없습니다."));
+
+        boolean isMember = group.getMembers().stream().anyMatch(m -> m.getUser().getUserId().equals(ownerId));
+
+        if (!isMember){
+
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"해당 그룹의 멤버가 아닙니다");
+
+        }
+
+
+        // 엔티티 생성, 저장
         Schedule sch = new Schedule(
                 group, ownerId,
                 req.title(),
@@ -41,6 +52,8 @@ public class ScheduleService {
                 req.longitude()
         );
         Schedule saved = scheduleRepo.save(sch);
+
+        // Dto로 변환 후 리턴함
         return new ScheduleResponseDto(
                 saved.getScheduleId(),
                 saved.getGroup().getGroupId(),
@@ -57,7 +70,17 @@ public class ScheduleService {
     }
 
     // 그룹별 스케줄 조회
-    public List<ScheduleResponseDto> listByGroup(Integer groupId) {
+    public List<ScheduleResponseDto> listByGroup(Integer groupId, Integer userId) {
+
+        ListOfGroup group = groupRepo.findById(groupId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,"그룹이 없습니다"));
+
+        boolean isMember = group.getMembers().stream().anyMatch(m -> m.getUser().getUserId().equals(userId));
+        if (!isMember){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"해당 그룹의 멤버가 아닙니다");
+        }
+
+
         return scheduleRepo.findByGroupGroupId(groupId).stream()
                 .map(s -> new ScheduleResponseDto(
                         s.getScheduleId(),
@@ -76,23 +99,42 @@ public class ScheduleService {
     }
 
     // 스케줄 삭제
-    public void delete(Integer scheduleId) {
+    public void delete(Integer scheduleId, Integer userId) {
 
-        scheduleRepo.deleteById(scheduleId);
+        Schedule sch = scheduleRepo.findById(scheduleId).orElseThrow(()->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다"));
+
+        // 일정 생성자만 삭제 가능함
+        if (!sch.getCreatorId().equals(userId)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"일정 삭제 권한이 없습니다");
+        }
+
+        scheduleRepo.delete(sch);
     }
 
 
-    public ScheduleResponseDto update(Integer scheduleId, Integer userId, CreateGroupRequestDto req){
+    public ScheduleResponseDto update(Integer scheduleId, Integer userId, CreateScheduleRequestDto req){
 
         Schedule sch = scheduleRepo.findById(scheduleId).orElseThrow(()
-                -> new IllegalArgumentException("일정을 찾을 수 없음"));
+                -> new ResponseStatusException(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다"));
 
-        if (!sch.getCreatorId().equals(userId)){
-            throw new IllegalArgumentException("일정 수정 권한이 없음");
+        // 수정: 생성자 권한 확인
+        if (!sch.getCreatorId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "일정 수정 권한이 없습니다.");
         }
 
+        // 수정: DTO 값으로 엔티티 필드 업데이트
+        sch.setTitle(req.title());
+        sch.setStartDatetime(req.startDatetime());
+        sch.setEndDatetime(req.endDatetime());
+        sch.setDescription(req.description());
+        sch.setLatitude(req.latitude());
+        sch.setLongitude(req.longitude());
+
+        // 수정된 엔티티 save 함
         Schedule updated = scheduleRepo.save(sch);
-        // Dto로 변환하고 리턴
+
+        // Dto로 바꾼 후 리턴 함
         return new ScheduleResponseDto(
                 updated.getScheduleId(),
                 updated.getGroup().getGroupId(),
@@ -105,7 +147,6 @@ public class ScheduleService {
                 updated.getLongitude(),
                 updated.getCreatedAt(),
                 updated.getUpdatedAt()
-                // DB처럼 함
         );
 
     }

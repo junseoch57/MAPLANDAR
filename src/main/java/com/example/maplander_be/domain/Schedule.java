@@ -67,48 +67,25 @@ public class Schedule {
 
     // getter / setter
 
-    public Integer getScheduleId() {
-        return scheduleId;
-    }
+    // getter
+    public Integer getScheduleId() { return scheduleId; }
+    public ListOfGroup getGroup() { return group; }
+    public Integer getCreatorId() { return creatorId; }
+    public String getTitle() { return title; }
+    public LocalDateTime getStartDatetime() { return startDatetime; }
+    public LocalDateTime getEndDatetime() { return endDatetime; }
+    public String getDescription() { return description; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public ListOfGroup getGroup() {
-        return group;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public LocalDateTime getStartDatetime() {
-        return startDatetime;
-    }
-
-    public LocalDateTime getEndDatetime() {
-        return endDatetime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    // setter
+    public void setTitle(String title) { this.title = title; }
+    public void setStartDatetime(LocalDateTime startDatetime) { this.startDatetime = startDatetime; }
+    public void setEndDatetime(LocalDateTime endDatetime) { this.endDatetime = endDatetime; }
+    public void setDescription(String description) { this.description = description; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 
 }

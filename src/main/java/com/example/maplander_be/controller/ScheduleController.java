@@ -5,6 +5,7 @@ import com.example.maplander_be.dto.CreateScheduleRequestDto;
 import com.example.maplander_be.dto.ScheduleResponseDto;
 import com.example.maplander_be.service.ScheduleService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class ScheduleController {
         this.svc = svc;
     }
 
-    // 스케줄 생성
+    // 일정 생성
     @PostMapping("/groups/{groupId}")
     public ResponseEntity<ScheduleResponseDto> create(
             @PathVariable Integer groupId,
@@ -30,29 +31,34 @@ public class ScheduleController {
         return ResponseEntity.status(201).body(dto);
     }
 
-    // 그룹별 스케줄 조회
+    // 그룹별 일정 조회
     @GetMapping("/groups/{groupId}")
     public ResponseEntity<List<ScheduleResponseDto>> listByGroup(
             @PathVariable Integer groupId, HttpSession session) {
-        session.getAttribute("LOGIN_USER");
-        List<ScheduleResponseDto> list = svc.listByGroup(groupId);
+
+        Integer me = (Integer) session.getAttribute("LOGIN_USER");
+
+        List<ScheduleResponseDto> list = svc.listByGroup(groupId,me);
         return ResponseEntity.ok(list);
     }
 
-    // 스케쥴 삭제
+    // 일정 삭제
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> delete(
             @PathVariable Integer scheduleId, HttpSession session){
-        session.getAttribute("LOGIN_USER");
-        svc.delete(scheduleId);
+
+        Integer me = (Integer) session.getAttribute("LOGIN_USER");
+
+        svc.delete(scheduleId,me);
         return ResponseEntity.noContent().build();
     }
 
+    // 일정 수정
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> update(
 
             @PathVariable Integer scheduleId,
-            @RequestBody CreateGroupRequestDto req, HttpSession session)
+            @Valid @RequestBody CreateScheduleRequestDto req, HttpSession session)
 
     {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
