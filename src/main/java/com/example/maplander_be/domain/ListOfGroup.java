@@ -37,6 +37,13 @@ public class ListOfGroup {
     @Builder.Default  // 새로 추가
     private List<GroupMember> members = new ArrayList<>();
 
+    // null 방지용(필수 X)
+    @PrePersist
+    private void onCreate(){
+        if (createdAt == null){
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public static ListOfGroup create(User owner, String groupName, List<User> initialMembers) {
         ListOfGroup group = ListOfGroup.builder()
