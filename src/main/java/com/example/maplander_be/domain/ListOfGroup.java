@@ -29,10 +29,12 @@ public class ListOfGroup {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    @Builder.Default
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default  // 새로 추가
     private List<GroupMember> members = new ArrayList<>();
 
 

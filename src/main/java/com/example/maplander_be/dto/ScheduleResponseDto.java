@@ -1,5 +1,7 @@
 package com.example.maplander_be.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public record ScheduleResponseDto(
@@ -13,6 +15,7 @@ public record ScheduleResponseDto(
         String description,
         Double latitude,
         Double longitude,
+        @JsonProperty("createdAt")
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 
