@@ -3,10 +3,13 @@ package com.example.maplander_be.service;
 import com.example.maplander_be.domain.*;
 import com.example.maplander_be.dto.*;
 import com.example.maplander_be.repository.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.maplander_be.domain.Calendar;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +34,40 @@ public class GroupService {
         this.memberRepo = memberRepo;
         this.userRepo = userRepo;
         this.calendarRepo = calendarRepo;
-
     }
+
+
+    @Transactional(readOnly = true)
+    public GroupResponseDto getGroupDetail(Integer userId, Integer groupId) {
+
+        ListOfGroup group = groupRepo.findById(groupId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "그룹을 찾을 수 없습니다."));
+
+        boolean isMember = group.getMembers().stream().anyMatch(m -> m.getUser().getUserId().equals(userId));
+
+        if (!isMember) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "해당 그룹의 멤버가 아닙니다.");
+        }
+
+        Calendar calendar = calendarRepo.findByGroup(group)  // 멤버 정보 Dto 반환
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "캘린더가 존재하지 않습니다."));
+
+        List<MemberDto> memberDtos = group.getMembers().stream()
+                .map(m -> new MemberDto(m.getUser().getUserId(), m.getUser().getName()))
+                // userId, name 뽑아내서 MemeberDto 생성
+                .collect(Collectors.toList());
+
+        return new GroupResponseDto(
+                group.getGroupId(),
+                group.getGroupName(),
+                group.getOwner().getUserId(),
+                calendar.getCalendarId(),
+                calendar.getCalendarName(),
+                memberDtos,  // Dto로 반환된 멤버 리스트
+                group.getCreatedAt()
+        );
+    }
+
 
     /* 그룹 생성 */
     public GroupResponseDto createGroup(Integer ownerId, CreateGroupRequestDto req) {

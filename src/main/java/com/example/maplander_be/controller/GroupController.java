@@ -20,11 +20,23 @@ public class GroupController {
         this.svc = svc;
     }
 
+
+    // 그룹 상세 조회
+    @GetMapping("/{group}")
+    public ResponseEntity<GroupResponseDto> detail(
+            @PathVariable Integer groupId, HttpSession session
+    ){
+        Integer me = (Integer) session.getAttribute("LOGIN_USER");
+        GroupResponseDto dto = svc.getGroupDetail(me,groupId);
+
+        return ResponseEntity.ok(dto);
+    }
+
+
     // 그룹 생성
     @PostMapping
     public ResponseEntity<GroupResponseDto> create(
-            @RequestBody CreateGroupRequestDto req,
-            HttpSession session) {
+            @RequestBody CreateGroupRequestDto req, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         GroupResponseDto resp = svc.createGroup(me, req);
         return ResponseEntity.status(201).body(resp);
@@ -42,8 +54,7 @@ public class GroupController {
     @PutMapping("/{groupId}")
     public ResponseEntity<GroupNameDto> rename(
             @PathVariable Integer groupId,
-            @RequestBody UpdateGroupNameDto req,
-            HttpSession session) {
+            @RequestBody UpdateGroupNameDto req, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         GroupNameDto dto = svc.updateGroupName(me, groupId, req);
         return ResponseEntity.ok(dto);
@@ -52,8 +63,7 @@ public class GroupController {
     // 그룹 삭제
     @DeleteMapping("/{groupId}")
     public ResponseEntity<Void> delete(
-            @PathVariable Integer groupId,
-            HttpSession session) {
+            @PathVariable Integer groupId, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         svc.deleteGroup(me, groupId);
         return ResponseEntity.noContent().build();
@@ -63,8 +73,7 @@ public class GroupController {
     @PostMapping("/{groupId}/members")
     public ResponseEntity<List<MemberDto>> addMembers(
             @PathVariable Integer groupId,
-            @RequestBody AddMemberRequestDto req,
-            HttpSession session) {
+            @RequestBody AddMemberRequestDto req, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         List<MemberDto> added = svc.addMembers(me, groupId, req);
         return ResponseEntity.status(201).body(added);
@@ -74,8 +83,7 @@ public class GroupController {
     @DeleteMapping("/{groupId}/members/{memberId}")
     public ResponseEntity<Void> removeMember(
             @PathVariable Integer groupId,
-            @PathVariable Integer memberId,
-            HttpSession session) {
+            @PathVariable Integer memberId, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         svc.removeMember(me, groupId, memberId);
         return ResponseEntity.noContent().build();
@@ -84,8 +92,7 @@ public class GroupController {
     // 그룹 탈퇴
     @DeleteMapping("/{groupId}/leave")
     public ResponseEntity<Void> leave(
-            @PathVariable Integer groupId,
-            HttpSession session) {
+            @PathVariable Integer groupId, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         svc.leaveGroup(me, groupId);
         return ResponseEntity.noContent().build();
