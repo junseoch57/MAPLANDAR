@@ -3,6 +3,8 @@ package com.example.maplander_be.controller;
 import com.example.maplander_be.dto.*;
 import com.example.maplander_be.service.GroupService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,11 @@ public class GroupController {
             @PathVariable("groupId") Integer groupId, HttpSession session
     ){
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
+
+        if (me == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         GroupResponseDto dto = svc.getGroupDetail(me,groupId);
 
         return ResponseEntity.ok(dto);
@@ -36,7 +43,7 @@ public class GroupController {
     // 그룹 생성
     @PostMapping
     public ResponseEntity<GroupResponseDto> create(
-            @RequestBody CreateGroupRequestDto req, HttpSession session) {
+            @Valid @RequestBody CreateGroupRequestDto req, HttpSession session) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         GroupResponseDto resp = svc.createGroup(me, req);
         return ResponseEntity.status(201).body(resp);

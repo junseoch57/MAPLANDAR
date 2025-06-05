@@ -74,10 +74,15 @@ public class GroupService {
         User owner = userRepo.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        List<User> invitees = req.memberIds().stream()
-                .map(id -> userRepo.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("초대 대상 없음: " + id)))
+        // memberIds 중 ownerId 제거
+        List<Integer> filteredMemberIds = req.memberIds().stream()
+                .filter(id -> !id.equals(ownerId))  // ownerId와 같은 ID를 제외
                 .collect(Collectors.toList());
+
+        // ownerId를 제외한 ID들만 User 엔티티로 매핑
+        List<User> invitees = filteredMemberIds.stream().map(id -> userRepo.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("초대 대상 없음: " + id))).collect(Collectors.toList());
+
 
         // 그룹, 멤버 엔티티 생성
         ListOfGroup group = ListOfGroup.create(owner, req.groupName(), invitees);
