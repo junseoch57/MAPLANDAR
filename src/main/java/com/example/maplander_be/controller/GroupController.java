@@ -22,9 +22,9 @@ public class GroupController {
 
 
     // 그룹 상세 조회
-    @GetMapping("/{group}")
+    @GetMapping("/{groupId}")
     public ResponseEntity<GroupResponseDto> detail(
-            @PathVariable Integer groupId, HttpSession session
+            @PathVariable("groupId") Integer groupId, HttpSession session
     ){
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
         GroupResponseDto dto = svc.getGroupDetail(me,groupId);
