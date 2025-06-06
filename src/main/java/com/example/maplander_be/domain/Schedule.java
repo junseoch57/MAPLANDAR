@@ -39,11 +39,15 @@ public class Schedule {
     @Column(name = "longitude")
     private Double longitude;
 
+    @Column(name = "address", length = 255, nullable = false)
+    private String address; // Schedule에 입력 장소 이름
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
 
     @PreUpdate
     public void onUpdate() {
@@ -63,6 +67,7 @@ public class Schedule {
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.address = address;
     }
 
     // getter / setter
@@ -77,6 +82,7 @@ public class Schedule {
     public String getDescription() { return description; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
+    public String getAddress(){return address;}
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
@@ -87,5 +93,6 @@ public class Schedule {
     public void setDescription(String description) { this.description = description; }
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
+    public void setAddress(String address){this.address = address; }
 
 }

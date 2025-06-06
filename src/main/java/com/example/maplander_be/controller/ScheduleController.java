@@ -31,6 +31,9 @@ public class ScheduleController {
         return ResponseEntity.status(201).body(dto);
     }
 
+
+
+
     // 그룹별 일정 조회
     @GetMapping("/groups/{groupId}")
     public ResponseEntity<List<ScheduleResponseDto>> listByGroup(

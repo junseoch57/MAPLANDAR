@@ -12,6 +12,7 @@ public record CreateScheduleRequestDto(
         @NotNull LocalDateTime endDatetime,
         String description,
         Double latitude,
-        Double longitude
+        Double longitude,
+        @NotBlank String address
 
 ) {}

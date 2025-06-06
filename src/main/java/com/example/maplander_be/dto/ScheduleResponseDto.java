@@ -15,6 +15,7 @@ public record ScheduleResponseDto(
         String description,
         Double latitude,
         Double longitude,
+        String address,
         @JsonProperty("createdAt")
         LocalDateTime createdAt,
         LocalDateTime updatedAt
