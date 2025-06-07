@@ -1,11 +1,14 @@
 package com.example.maplander_be.domain;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Schedule")
+
+
 public class Schedule {
 
 
@@ -58,7 +61,7 @@ public class Schedule {
 
     public Schedule(ListOfGroup group, Integer creatorId, String title,
                     LocalDateTime startDatetime, LocalDateTime endDatetime,
-                    String description, Double latitude, Double longitude) {
+                    String description, Double latitude, Double longitude, String address) {
         this.group = group;
         this.creatorId = creatorId;
         this.title = title;
