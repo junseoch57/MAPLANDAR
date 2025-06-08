@@ -6,36 +6,51 @@ import com.example.maplander_be.dto.ScheduleResponseDto;
 import com.example.maplander_be.service.ScheduleService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/schedules")
+@RequestMapping("/api/groups/{groupId}/schedules")
 public class ScheduleController {
 
-    public final ScheduleService svc;
+    private final ScheduleService svc;
 
     public ScheduleController(ScheduleService svc){
         this.svc = svc;
     }
 
-    // 일정 생성
-    @PostMapping("/groups/{groupId}")
-    public ResponseEntity<ScheduleResponseDto> create(
+
+    // 단일 일정 조회
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleResponseDto> getSchedule(
             @PathVariable Integer groupId,
-            @RequestBody CreateScheduleRequestDto req, HttpSession session) {
+            @PathVariable Integer scheduleId,
+            HttpSession session
+    ) {
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
-        ScheduleResponseDto dto = svc.create(me, groupId, req);
-        return ResponseEntity.status(201).body(dto);
+        ScheduleResponseDto dto = svc.getScheduleById(groupId, scheduleId, me);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 날짜별 일정 조회
+    @GetMapping(params = "date")
+    public ResponseEntity<List<ScheduleResponseDto>> getSchedulesByDate(
+            @PathVariable Integer groupId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            HttpSession session
+    ) {
+        Integer me = (Integer) session.getAttribute("LOGIN_USER");
+        List<ScheduleResponseDto> list = svc.getSchedulesByDate(groupId, date, me);
+        return ResponseEntity.ok(list);
     }
 
 
-
-
     // 그룹별 일정 조회
-    @GetMapping("/groups/{groupId}")
+    @GetMapping
     public ResponseEntity<List<ScheduleResponseDto>> listByGroup(
             @PathVariable Integer groupId, HttpSession session) {
 
@@ -45,9 +60,22 @@ public class ScheduleController {
         return ResponseEntity.ok(list);
     }
 
+
+    // 일정 생성
+    @PostMapping
+    public ResponseEntity<ScheduleResponseDto> create(
+            @PathVariable Integer groupId,
+            @RequestBody CreateScheduleRequestDto req, HttpSession session) {
+        Integer me = (Integer) session.getAttribute("LOGIN_USER");
+        ScheduleResponseDto dto = svc.create(me, groupId, req);
+        return ResponseEntity.status(201).body(dto);
+    }
+
+
     // 일정 삭제
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> delete(
+            @PathVariable Integer groupId,
             @PathVariable Integer scheduleId, HttpSession session){
 
         Integer me = (Integer) session.getAttribute("LOGIN_USER");
@@ -60,6 +88,7 @@ public class ScheduleController {
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> update(
 
+            @PathVariable Integer groupId,
             @PathVariable Integer scheduleId,
             @Valid @RequestBody CreateScheduleRequestDto req, HttpSession session)
 

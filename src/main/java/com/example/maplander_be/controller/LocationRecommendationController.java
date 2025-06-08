@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/locations")
-public class LocationRecommendationController {
+public class LocationRecommendationController {  // 아직 수정 중
 
     private final LocationRecommendationService svc;
 

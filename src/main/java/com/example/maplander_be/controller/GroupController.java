@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/groups")
 public class GroupController {
 
-
     private final GroupService svc;
     public GroupController(GroupService svc){
         this.svc = svc;
