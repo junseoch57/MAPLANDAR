@@ -11,9 +11,9 @@ public record PlaceDto(
         String roadAddressName,
         double latitude,
         double longitude,
-        int distance // m
+        int distance
 ) {
-    /* ============ 카카오 응답 매핑용 내부 DTO ============ */
+    /* 카카오 응답 매핑용 내부 DTO */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record KakaoPlaceResponse(
             @JsonAlias("documents") List<KakaoDocument> documents) {

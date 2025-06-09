@@ -17,7 +17,7 @@ public class LocationRecommendationService {
         this.kakaoMapClient = kakaoMapClient;
     }
 
-    public Mono<List<PlaceDto>> recomend(List<CoordinateDto> coords){
+    public Mono<List<PlaceDto>> recommend(List<CoordinateDto> coords){
 
         if (coords == null || coords.size() < 2){
             return Mono.error(new IllegalArgumentException("2개 이상의 좌표값을 입력해야 합니다."));
