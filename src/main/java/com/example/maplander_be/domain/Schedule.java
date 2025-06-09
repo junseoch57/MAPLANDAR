@@ -1,7 +1,6 @@
 package com.example.maplander_be.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 

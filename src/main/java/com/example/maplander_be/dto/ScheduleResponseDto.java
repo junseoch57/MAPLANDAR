@@ -18,6 +18,7 @@ public record ScheduleResponseDto(
         String address,
         @JsonProperty("createdAt")
         LocalDateTime createdAt,
+        @JsonProperty("updatedAt")
         LocalDateTime updatedAt
 
 ) {

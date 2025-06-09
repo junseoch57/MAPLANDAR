@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 public record CreateScheduleRequestDto(
 
         @NotBlank String title,
-        @NotNull LocalDateTime startDatetime,
-        @NotNull LocalDateTime endDatetime,
         String description,
+        @NotBlank String address,
         Double latitude,
         Double longitude,
-        @NotBlank String address
+        @NotNull LocalDateTime startDatetime,
+        @NotNull LocalDateTime endDatetime
 
 ) {}
