@@ -26,7 +26,7 @@ public class LocationRecommendationService {
         double avgLat = coords.stream().mapToDouble(CoordinateDto::latitude).average().orElseThrow();
         double avgLng = coords.stream().mapToDouble(CoordinateDto::longitude).average().orElseThrow();
 
-        // 반경 2km, 20개 리턴(?) - 수정 필요함
+        // 반경 2km, 20개 리턴 - 수정 필요함
         return kakaoMapClient.searchPlaces(avgLat, avgLng, 2000, 20);
 
     }

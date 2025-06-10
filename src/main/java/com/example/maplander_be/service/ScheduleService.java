@@ -2,13 +2,11 @@ package com.example.maplander_be.service;
 
 import com.example.maplander_be.domain.ListOfGroup;
 import com.example.maplander_be.domain.Schedule;
-import com.example.maplander_be.dto.CreateGroupRequestDto;
 import com.example.maplander_be.dto.CreateScheduleRequestDto;
 import com.example.maplander_be.dto.ScheduleResponseDto;
 import com.example.maplander_be.repository.GroupRepository;
 import com.example.maplander_be.repository.ScheduleRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;

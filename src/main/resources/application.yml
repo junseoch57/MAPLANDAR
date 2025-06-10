@@ -1,5 +1,5 @@
 kakao:
-  rest-api-key: ${KAKAO_REST_API_KEY:YOUR_FALLBACK_REST_API_KEY}
+  rest-api-key: 440ec0d96769944bb87439d25649be95   #실제 RestAPI KEY
 
 spring:
   datasource:
@@ -14,12 +14,10 @@ spring:
 
 server:
   port: 8080
-
-
   servlet:
     session:
       cookie:
-        http-only: false  # HttpOnly 해제
+        http-only: false  #HttpOnly 해제
         secure: false
         same-site: lax
         path: /
