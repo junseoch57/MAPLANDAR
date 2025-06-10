@@ -163,13 +163,14 @@ public class ScheduleService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"해당 그룹의 멤버가 아닙니다");
         }
 
-
         LocalDateTime dayStart = targetDate.atStartOfDay();
-        LocalDateTime nextDayStart = targetDate.plusDays(1).atStartOfDay();
+        LocalDateTime nextDayStart = dayStart.plusDays(1);
 
-        // Repository 호출: date range에 포함되는 일정 조회
-        List<Schedule> schedules = scheduleRepo.findByGroup_GroupIdAndEndDatetimeGreaterThanEqualAndStartDatetimeLessThan(
+
+        List<Schedule> schedules = scheduleRepo.findByGroup_GroupIdAndStartDatetimeGreaterThanEqualAndStartDatetimeLessThan(
+
                 groupId, dayStart, nextDayStart
+
         );
 
         // DTO 목록으로 변환 후 반환

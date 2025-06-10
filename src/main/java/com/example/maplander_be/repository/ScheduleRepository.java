@@ -20,10 +20,21 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
             @Param("scheduleId") Integer scheduleId
     );
 
+    // 생략해도 되는 부분
     List<Schedule> findByGroup_GroupIdAndEndDatetimeGreaterThanEqualAndStartDatetimeLessThan(
             Integer groupId,
             LocalDateTime dayStart,
             LocalDateTime nextDayStart
     );
+
+
+    List<Schedule> findByGroup_GroupIdAndStartDatetimeGreaterThanEqualAndStartDatetimeLessThan(
+
+            Integer groupId,
+            LocalDateTime dayStart,
+            LocalDateTime nextDayStart
+
+    );
+
 
 }
