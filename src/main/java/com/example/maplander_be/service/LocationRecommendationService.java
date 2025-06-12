@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationRecommendationService {
@@ -30,14 +32,21 @@ public class LocationRecommendationService {
         double avgLat = coords.stream().mapToDouble(NamedCoordinateDto::latitude).average().orElseThrow();
         double avgLng = coords.stream().mapToDouble(NamedCoordinateDto::longitude).average().orElseThrow();
 
+
+        Map<String, String> addressMap = coords.stream().collect(Collectors.toMap(
+                NamedCoordinateDto::userName,
+                NamedCoordinateDto::address
+        ));
+
         // 사용자 이름 리스트
         List<String> names = coords.stream().map(NamedCoordinateDto::userName).toList();
 
         return kakaoMapClient.searchPlaces(avgLat, avgLng, 2000, 5) // 장소 5개 추천해줌
                 .map(places -> {
                     String title = String.join(", ", names) + "의 추천 장소";
-                    return new RecommendationResponseDto(names, places, title);
+                    return new RecommendationResponseDto(names, places, title, addressMap);
                 });
+
 
     }
 

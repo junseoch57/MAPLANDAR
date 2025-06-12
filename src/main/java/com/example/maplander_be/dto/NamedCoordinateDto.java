@@ -4,7 +4,8 @@ public record NamedCoordinateDto(
 
         String userName,
         double latitude,
-        double longitude
+        double longitude,
+        String address
 
 )
 
