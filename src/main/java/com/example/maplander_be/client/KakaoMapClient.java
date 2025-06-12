@@ -1,7 +1,6 @@
 package com.example.maplander_be.client;
 
 import com.example.maplander_be.dto.PlaceDto;
-import jakarta.validation.Valid;
 
 
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +24,12 @@ public class KakaoMapClient {
     }
 
 
-    public Mono<List<PlaceDto>> searchPlaces(double lat, double lng,
-                                             int radius, int size) {
+    public Mono<List<PlaceDto>> searchPlaces(double lat,
+                                             double lng,
+                                             int radius,
+                                             int size,
+                                             String categoryGroupCode) // 코드로 카테고리 분리
+    {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -34,13 +37,11 @@ public class KakaoMapClient {
                         .queryParam("y", lat)
                         .queryParam("x", lng)
                         .queryParam("radius", radius)
-                        .queryParam("category_group_code", "CE7") // 카페
+                        .queryParam("category_group_code", categoryGroupCode)
                         .queryParam("size", size)
                         .build())
                 .retrieve()
                 .bodyToMono(PlaceDto.KakaoPlaceResponse.class)
                 .map(PlaceDto.KakaoPlaceResponse::toPlaceDtoList);
     }
-
-
 }

@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/locations")
+@RequestMapping("/api/locations/recommend")
 public class LocationRecommendationController {
 
     private final LocationRecommendationService svc;
@@ -23,13 +23,26 @@ public class LocationRecommendationController {
     }
 
 
-    /* 장소 추천 요청 */
-    @PostMapping("/recommend")
-    public Mono<RecommendationResponseDto> recommend(
+    /*  장소 추천 - 카페  */
+    @PostMapping("/cafes")
+    public Mono<RecommendationResponseDto> recommendCafes(
+
             @RequestBody @Valid @Size(min = 2)
             List<NamedCoordinateDto> coordinates) {
 
-        return svc.recommendWithNames(coordinates);
+        return svc.recommendCafes(coordinates);
 
     }
+
+    /*  장소 추천 - 음식점  */
+    @PostMapping("/foods")
+    public Mono<RecommendationResponseDto> recommendFoods(
+
+            @RequestBody @Valid @Size(min = 2)
+            List<NamedCoordinateDto> coordinates){
+
+        return svc.recommendFoods(coordinates);
+    }
+
+
 }
